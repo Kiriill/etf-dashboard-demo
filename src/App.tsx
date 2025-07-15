@@ -72,42 +72,73 @@ function App() {
           <option value="5Y">5 Years</option>
         </select>
       </div>
-      {/* Table only, no flex or medals column outside */}
-      <div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border p-2 text-left">Ticker</th>
-                  <th className="border p-2 text-left">ETF name</th>
-                  <th className="border p-2 text-right">Performance ({selectedPeriod})</th>
-                  <th className="border p-2 text-right">MER p.a.¹</th>
-                  <th className="border p-2 text-right">FUM ($M)²</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedETFs.map((etf, idx) => (
-                  <tr key={etf.symbol} className="hover:bg-gray-50">
-                    <td className="border p-2" style={{ paddingLeft: 32, position: 'relative' }}>
-                      {idx < 3 && (
-                        <span style={{ position: 'absolute', left: 8 }}>{medals[idx]}</span>
-                      )}
-                      {etf.symbol}
-                    </td>
-                    <td className="border p-2">{etf.name}</td>
-                    <td className="border p-2 text-right">
-                      <span className={etf.performance[selectedPeriod] >= 0 ? 'text-green-600' : 'text-red-600'}>
-                        {formatPerformancePercentage(etf.performance[selectedPeriod])}
-                      </span>
-                    </td>
-                    <td className="border p-2 text-right">{formatMER(etf.mer)}</td>
-                    <td className="border p-2 text-right">{formatCurrency(etf.aum)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {/* Card-based layout for mobile */}
+      <div className="flex flex-col gap-4 md:hidden">
+        {sortedETFs.map((etf, idx) => (
+          <div key={etf.symbol} className="bg-white rounded shadow p-4 flex flex-col">
+            <div className="flex items-center mb-2">
+              {idx < 3 ? (
+                <span className="text-2xl mr-2">{medals[idx]}</span>
+              ) : (
+                <span className="font-bold text-lg mr-2">{idx + 1}</span>
+              )}
+              <span className="font-bold text-lg mr-2">{etf.symbol}</span>
+              <span className="text-gray-700">{etf.name}</span>
+            </div>
+            <div className="flex flex-col gap-1 text-sm">
+              <div>
+                <span className="font-semibold">Performance ({selectedPeriod}): </span>
+                <span>{formatPerformancePercentage(etf.performance[selectedPeriod])}</span>
+              </div>
+              <div>
+                <span className="font-semibold">MER p.a.¹: </span>
+                <span>{formatMER(etf.mer)}</span>
+              </div>
+              <div>
+                <span className="font-semibold">FUM ($M)²: </span>
+                <span>{formatCurrency(etf.aum)}</span>
+              </div>
+            </div>
           </div>
+        ))}
+      </div>
+      {/* Table for desktop and tablet */}
+      <div className="hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white border">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="border p-2 text-center w-12"></th>
+                <th className="border p-2 text-left">Symbol</th>
+                <th className="border p-2 text-left">Name</th>
+                <th className="border p-2 text-right">Performance ({selectedPeriod})</th>
+                <th className="border p-2 text-right">MER p.a.¹</th>
+                <th className="border p-2 text-right">FUM ($M)²</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedETFs.map((etf, idx) => (
+                <tr key={etf.symbol} className="hover:bg-gray-50">
+                  <td className="border p-2 text-center align-middle">
+                    {idx < 3 ? medals[idx] : (idx + 1)}
+                  </td>
+                  <td className="border p-2" style={{ paddingLeft: 32, position: 'relative' }}>
+                    {etf.symbol}
+                  </td>
+                  <td className="border p-2">{etf.name}</td>
+                  <td className="border p-2 text-right">
+                    <span className={etf.performance[selectedPeriod] >= 0 ? 'text-green-600' : 'text-red-600'}>
+                      {formatPerformancePercentage(etf.performance[selectedPeriod])}
+                    </span>
+                  </td>
+                  <td className="border p-2 text-right">{formatMER(etf.mer)}</td>
+                  <td className="border p-2 text-right">{formatCurrency(etf.aum)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
+      </div>
       {/* Source and Disclaimer */}
       <div className="mt-8 text-sm text-gray-500">
         <div className="mb-4">
